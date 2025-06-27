@@ -1,0 +1,1838 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxDrive - Location de Voitures de Luxe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background-color: #000;
+    color: #eee;
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .language-switcher {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active, .lang-btn:hover {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: black;
+            transform: scale(1.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('./images/voiture.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 2rem;
+            animation: fadeInUp 1.5s ease;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B6B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: black;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Sections */
+        .section {
+    background-color: #111;
+    color: #eee;
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, #333, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Car Catalog */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: #1a1a1a; color: #eee;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-color: #FFD700;
+            color: black;
+            transform: translateY(-2px);
+        }
+
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .car-card {
+            background: #1a1a1a;
+            color: #eee;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+        }
+
+        .car-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .car-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .car-card:hover .car-image img {
+            transform: scale(1.05);
+        }
+
+        .car-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            font-size: 4rem;
+            color: #999;
+        }
+
+        .car-gallery {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .car-gallery:hover {
+            background: rgba(255, 215, 0, 0.9);
+            color: black;
+        }
+
+        .car-info {
+            padding: 1.5rem;
+        }
+
+        .car-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .car-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .car-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .availability-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .available {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .reserved {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .btn-reserve {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #333, #555);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reserve:hover {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: black;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-image:hover {
+            transform: scale(1.05);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+
+        /* File Upload Styles */
+        .file-upload-container {
+            margin: 1rem 0;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 1rem;
+            background: #222; color: #fff;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-color: #FFD700;
+            color: black;
+        }
+
+        .uploaded-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .uploaded-image {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        /* Reviews Section */
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .review-card {
+            background: #1a1a1a; color: #eee;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stars {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-text {
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .review-author {
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* FAQ Section */
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: #1a1a1a; color: #eee;
+            margin-bottom: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            background: #222; color: #fff;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: black;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-answer.open {
+            padding: 1.5rem;
+            max-height: 200px;
+        }
+
+        /* Contact Section */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .contact-form {
+            background: #1a1a1a; color: #eee;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #333, #555);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-icon {
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* Admin Section */
+        .admin-login {
+            max-width: 400px;
+            margin: 10rem auto;
+            padding: 2rem;
+            background: #1a1a1a; color: #eee;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .admin-dashboard {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            margin-top: 5rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card {
+            background: #1a1a1a; color: #eee;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .dashboard-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: #1a1a1a; color: #eee;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-color: #FFD700;
+            color: black;
+        }
+
+        .tab-content {
+            background: #1a1a1a; color: #eee;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: #1a1a1a; color: #eee;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Promotion Popup */
+        .promo-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: black;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 3000;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+        }
+
+        .promo-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: black;
+        }
+
+        /* Calendar */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .calendar-day {
+            background: #1a1a1a; color: #eee;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background: #f0f0f0;
+        }
+
+        .calendar-day.selected {
+            background: #FFD700;
+            color: black;
+        }
+
+        .calendar-day.reserved {
+            background: #ff6b6b;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        /* Image Preview */
+        .image-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            cursor: pointer;
+        }
+
+        .image-preview img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .cars-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section {
+    background-color: #111;
+    color: #eee;
+                padding: 3rem 1rem;
+            }
+
+            .modal-content {
+                max-width: 95%;
+                padding: 1rem;
+            }
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">LuxDrive</div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link" onclick="showPage('home')" data-fr="Accueil" data-en="Home">Accueil</a></li>
+                    <li><a href="#" class="nav-link" onclick="showPage('catalog')" data-fr="Catalogue" data-en="Catalog">Catalogue</a></li>
+                    <li><a href="#" class="nav-link" onclick="showPage('about')" data-fr="À propos" data-en="About">À propos</a></li>
+                    <li><a href="#" class="nav-link" onclick="showPage('contact')" data-fr="Contact" data-en="Contact">Contact</a></li>
+                    <li><a href="#" class="nav-link" onclick="showPage('admin')" data-fr="Admin" data-en="Admin">Admin</a></li>
+                </ul>
+            </nav>
+            <div class="language-switcher">
+                <button class="lang-btn active" onclick="setLanguage('fr')">FR</button>
+                <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 data-fr="LOUEZ VOTRE RÊVE" data-en="RENT YOUR DREAM">LOUEZ VOTRE RÊVE</h1>
+                <p data-fr="Découvrez l'excellence avec notre collection exclusive de voitures de luxe" data-en="Discover excellence with our exclusive collection of luxury cars">Découvrez l'excellence avec notre collection exclusive de voitures de luxe</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary" onclick="showPage('catalog')" data-fr="Voir le Catalogue" data-en="View Catalog">Voir le Catalogue</button>
+                    <button class="btn-secondary" onclick="showPage('about')" data-fr="En Savoir Plus" data-en="Learn More">En Savoir Plus</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="section">
+            <h2 class="section-title" data-fr="Avis Clients" data-en="Customer Reviews">Avis Clients</h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text" data-fr="Service exceptionnel ! La Ferrari était en parfait état et l'équipe très professionnelle." data-en="Exceptional service! The Ferrari was in perfect condition and the team very professional.">"Service exceptionnel ! La Ferrari était en parfait état et l'équipe très professionnelle."</p>
+                    <div class="review-author">- Marie Dubois</div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text" data-fr="Expérience inoubliable avec la Lamborghini. Je recommande vivement !" data-en="Unforgettable experience with the Lamborghini. Highly recommend!">"Expérience inoubliable avec la Lamborghini. Je recommande vivement !"</p>
+                    <div class="review-author">- Jean Martin</div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text" data-fr="Processus de réservation simple et rapide. Voitures de rêve !" data-en="Simple and fast booking process. Dream cars!">"Processus de réservation simple et rapide. Voitures de rêve !"</p>
+                    <div class="review-author">- Sophie Laurent</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="section">
+            <h2 class="section-title" data-fr="Questions Fréquentes" data-en="Frequently Asked Questions">Questions Fréquentes</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)" data-fr="Quelles sont les conditions de location ?" data-en="What are the rental conditions?">Quelles sont les conditions de location ?</div>
+                    <div class="faq-answer">
+                        <p data-fr="Permis de conduire valide depuis plus de 2 ans, âge minimum 25 ans, caution par carte bancaire." data-en="Valid driving license for more than 2 years, minimum age 25, credit card deposit.">Permis de conduire valide depuis plus de 2 ans, âge minimum 25 ans, caution par carte bancaire.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)" data-fr="Quel est le montant de la caution ?" data-en="What is the deposit amount?">Quel est le montant de la caution ?</div>
+                    <div class="faq-answer">
+                        <p data-fr="La caution varie entre 5 000€ et 15 000€ selon le véhicule choisi." data-en="The deposit varies between €5,000 and €15,000 depending on the vehicle chosen.">La caution varie entre 5 000€ et 15 000€ selon le véhicule choisi.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)" data-fr="L'assurance est-elle incluse ?" data-en="Is insurance included?">L'assurance est-elle incluse ?</div>
+                    <div class="faq-answer">
+                        <p data-fr="Oui, une assurance tous risques est incluse dans le prix de la location." data-en="Yes, comprehensive insurance is included in the rental price.">Oui, une assurance tous risques est incluse dans le prix de la location.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Catalog Page -->
+    <div id="catalog" class="page">
+        <section class="section" style="margin-top: 5rem;">
+            <h2 class="section-title" data-fr="Notre Collection" data-en="Our Collection">Notre Collection</h2>
+            
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterCars('all')" data-fr="Tous" data-en="All">Tous</button>
+                <button class="filter-btn" onclick="filterCars('sport')" data-fr="Sport" data-en="Sport">Sport</button>
+                <button class="filter-btn" onclick="filterCars('luxe')" data-fr="Luxe" data-en="Luxury">Luxe</button>
+                <button class="filter-btn" onclick="filterCars('suv')" data-fr="SUV" data-en="SUV">SUV</button>
+            </div>
+
+            <div class="cars-grid" id="carsGrid">
+                <!-- Cars will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- About Page -->
+    <div id="about" class="page">
+        <section class="section" style="margin-top: 5rem;">
+            <h2 class="section-title" data-fr="À Propos de LuxDrive" data-en="About LuxDrive">À Propos de LuxDrive</h2>
+            <div style="max-width: 800px; margin: 0 auto; text-align: center; font-size: 1.2rem; line-height: 1.8;">
+                <p data-fr="Depuis 2015, LuxDrive redéfinit l'expérience de la location de voitures de luxe en France. Notre passion pour l'excellence automobile nous a menés à constituer une flotte exceptionnelle des plus prestigieuses marques mondiales." data-en="Since 2015, LuxDrive has been redefining the luxury car rental experience in France. Our passion for automotive excellence has led us to build an exceptional fleet of the world's most prestigious brands.">Depuis 2015, LuxDrive redéfinit l'expérience de la location de voitures de luxe en France. Notre passion pour l'excellence automobile nous a menés à constituer une flotte exceptionnelle des plus prestigieuses marques mondiales.</p>
+                
+                <p data-fr="Nos valeurs : Excellence, Sécurité, Service personnalisé. Chaque véhicule est minutieusement entretenu et inspecté avant chaque location pour garantir une expérience inoubliable." data-en="Our values: Excellence, Safety, Personalized service. Each vehicle is meticulously maintained and inspected before each rental to guarantee an unforgettable experience.">Nos valeurs : Excellence, Sécurité, Service personnalisé. Chaque véhicule est minutieusement entretenu et inspecté avant chaque location pour garantir une expérience inoubliable.</p>
+
+                <p data-fr="Faites confiance à notre expertise pour vivre des moments d'exception au volant des plus belles voitures du monde." data-en="Trust our expertise to live exceptional moments behind the wheel of the world's most beautiful cars.">Faites confiance à notre expertise pour vivre des moments d'exception au volant des plus belles voitures du monde.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contact" class="page">
+        <section class="section" style="margin-top: 5rem;">
+            <h2 class="section-title" data-fr="Contactez-Nous" data-en="Contact Us">Contactez-Nous</h2>
+            <div class="contact-container">
+                <div class="contact-form">
+                    <h3 data-fr="Envoyez-nous un message" data-en="Send us a message">Envoyez-nous un message</h3>
+                    <form onsubmit="submitContact(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                    <input type="email" id="resEmail" required><br><br>
+                    <label data-fr="Nom complet" data-en="Full name">Nom complet</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-fr="Email" data-en="Email">Email</label>
+                            <input type="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-fr="Téléphone" data-en="Phone">Téléphone</label>
+                            <input type="tel" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-fr="Message" data-en="Message">Message</label>
+                            <textarea rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary" data-fr="Envoyer" data-en="Send">Envoyer</button>
+                    </form>
+                </div>
+                <div class="contact-info">
+                    <h3 data-fr="Informations de contact" data-en="Contact Information">Informations de contact</h3>
+                    <div class="contact-item">
+                        <span class="contact-icon">📍</span>
+                        <span>123 Avenue des Champs-Élysées, 75008 Paris</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📞</span>
+                        <span>+33 1 23 45 67 89</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">✉️</span>
+                        <span>contact@luxdrive.fr</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">🕒</span>
+                        <span data-fr="Lun-Dim: 8h-20h" data-en="Mon-Sun: 8am-8pm">Lun-Dim: 8h-20h</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="admin" class="page">
+        <div id="adminLogin" class="admin-login">
+            <h2 data-fr="Connexion Admin" data-en="Admin Login">Connexion Admin</h2>
+            <form onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label data-fr="Nom d'utilisateur" data-en="Username">Nom d'utilisateur</label>
+                    <input type="text" id="adminUsername" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Mot de passe" data-en="Password">Mot de passe</label>
+                    <input type="password" id="adminPassword" required>
+                </div>
+                <button type="submit" class="btn-primary" data-fr="Se connecter" data-en="Login">Se connecter</button>
+            </form>
+        </div>
+
+        <div id="adminDashboard" class="admin-dashboard hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 data-fr="Tableau de Bord Admin" data-en="Admin Dashboard">Tableau de Bord Admin</h2>
+                <button onclick="adminLogout()" class="btn-secondary" data-fr="Déconnexion" data-en="Logout">Déconnexion</button>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="dashboard-number" id="totalCars">12</div>
+                    <h3 data-fr="Véhicules" data-en="Vehicles">Véhicules</h3>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-number" id="totalReservations">24</div>
+                    <h3 data-fr="Réservations" data-en="Reservations">Réservations</h3>
+                </div>
+                <div class="dashboard-card">
+                    <div class="dashboard-number" id="monthlyRevenue">45,000€</div>
+                    <h3 data-fr="Chiffre d'affaires" data-en="Revenue">Chiffre d'affaires</h3>
+                </div>
+            </div>
+
+            
+<div class="tab-content" style="margin-bottom:3rem;">
+    <h3 style="margin-bottom:1rem;">Statistiques</h3>
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="dashboard-number" id="totalIncome">0€</div>
+            <h4>Total Revenus</h4>
+        </div>
+        <div class="dashboard-card">
+            <div class="dashboard-number" id="reservationCount">0</div>
+            <h4>Réservations</h4>
+        </div>
+        <div class="dashboard-card">
+            <div class="dashboard-number" id="monthlyGraph">📊</div>
+            <h4>Revenus par mois</h4>
+        </div>
+    </div>
+    <canvas id="revenueChart" style="width:100%; max-width:600px; margin:2rem auto; background:#fff; border-radius:10px;"></canvas>
+</div>
+
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showAdminTab('vehicles')" data-fr="Gestion Véhicules" data-en="Vehicle Management">Gestion Véhicules</button>
+                <button class="tab-btn" onclick="showAdminTab('reservations')" data-fr="Réservations" data-en="Reservations">Réservations</button>
+            </div>
+
+            <div id="vehiclesTab" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h3 data-fr="Gestion des Véhicules" data-en="Vehicle Management">Gestion des Véhicules</h3>
+                    <button onclick="showAddCarModal()" class="btn-primary" data-fr="Ajouter Véhicule" data-en="Add Vehicle">Ajouter Véhicule</button>
+                </div>
+                <div id="adminCarsGrid" class="cars-grid">
+                    <!-- Admin cars will be populated here -->
+                </div>
+            </div>
+
+            <div id="reservationsTab" class="tab-content hidden">
+                <h3 data-fr="Gestion des Réservations" data-en="Reservation Management">Gestion des Réservations</h3>
+                <div id="reservationsList">
+                    <!-- Reservations will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="carModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('carModal')">&times;</button>
+            <div id="carModalContent">
+                <!-- Car details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="reservationModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('reservationModal')">&times;</button>
+            <h3 data-fr="Réserver ce véhicule" data-en="Reserve this vehicle">Réserver ce véhicule</h3>
+            <form onsubmit="submitReservation(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="resEmail" required><br><br>
+                    <label data-fr="Nom complet" data-en="Full name">Nom complet</label>
+                    <input type="text" id="resName" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Email" data-en="Email">Email</label>
+                    <input type="email" id="resEmail" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Téléphone" data-en="Phone">Téléphone</label>
+                    <input type="tel" id="resPhone" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Date de début" data-en="Start date">Date de début</label>
+                    <input type="date" id="resStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Date de fin" data-en="End date">Date de fin</label>
+                    <input type="date" id="resEndDate" required>
+                </div>
+                
+<div class="form-group">
+    <label>Calendrier de disponibilité</label>
+    <div id="availabilityCalendar" class="calendar"></div>
+</div>
+
+                
+<div class="form-group">
+    <label>Moyen de paiement :</label>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; color: #fff;">
+        <label><input type="radio" name="paymentMethod" value="en ligne" checked> 💳 En ligne</label>
+        <label><input type="radio" name="paymentMethod" value="sur place"> 💵 Sur place</label>
+    </div>
+</div>
+
+                <div class="form-group">
+                    <label data-fr="Notes spéciales" data-en="Special notes">Notes spéciales</label>
+                    <textarea id="resNotes" rows="3"></textarea>
+                </div>
+                
+<div class="form-group" id="stripePaymentSection" style="display:none;">
+    <button type="button" class="btn-primary" onclick="redirectToStripe()">Payer maintenant</button>
+</div>
+
+                <button type="button" onclick="submitReservation()" class="btn-primary" data-fr="Confirmer la réservation" data-en="Confirm reservation">Confirmer la réservation</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addCarModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('addCarModal')">&times;</button>
+            <h3 data-fr="Ajouter un véhicule" data-en="Add a vehicle">Ajouter un véhicule</h3>
+            <form onsubmit="addCar(event)">
+                <div class="form-group">
+                    <label data-fr="Nom du véhicule" data-en="Vehicle name">Nom du véhicule</label>
+                    <input type="text" id="carName" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Prix par jour (€)" data-en="Price per day (€)">Prix par jour (€)</label>
+                    <input type="number" id="carPrice" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Catégorie" data-en="Category">Catégorie</label>
+                    <select id="carCategory" required>
+                        <option value="sport">Sport</option>
+                        <option value="luxe">Luxe</option>
+                        <option value="suv">SUV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Puissance (CV)" data-en="Power (HP)">Puissance (CV)</label>
+                    <input type="number" id="carPower" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Vitesse max (km/h)" data-en="Max speed (km/h)">Vitesse max (km/h)</label>
+                    <input type="number" id="carSpeed" required>
+                </div>
+                <div class="form-group">
+                    <label data-fr="Description" data-en="Description">Description</label>
+                    <textarea id="carDescription" rows="3" required></textarea>
+                </div>
+                
+    <div class="form-group">
+        <label data-fr="Images (max 20)" data-en="Images (max 20)">Images (max 20)</label>
+        <input type="file" id="carImages" multiple accept="image/*" onchange="previewCarImages(event)">
+        <div id="imagePreview" class="uploaded-images"></div>
+    </div>
+<button type="submit" class="btn-primary" data-fr="Ajouter" data-en="Add">Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Promotion Popup -->
+    <div id="promoPopup" class="promo-popup hidden">
+        <button class="promo-close" onclick="closePromo()">&times;</button>
+        <h3 data-fr="🎉 Offre Spéciale !" data-en="🎉 Special Offer!">🎉 Offre Spéciale !</h3>
+        <p data-fr="10% de réduction sur votre première location !" data-en="10% off your first rental!">10% de réduction sur votre première location !</p>
+        <p data-fr="Code: WELCOME10" data-en="Code: WELCOME10">Code: WELCOME10</p>
+        <button onclick="closePromo()" class="btn-secondary" data-fr="J'en profite !" data-en="Take advantage!">J'en profite !</button>
+    </div>
+
+    <script>
+        // Global variables
+        let currentLanguage = 'fr';
+        let currentCarForReservation = null;
+        
+        // Sample car data
+        let cars = [
+            {
+                id: 1,
+                name: 'Ferrari 488 GTB',
+                price: 1200,
+                category: 'sport',
+                power: 670,
+                speed: 330,
+                description: 'Supercar italienne d\'exception avec un V8 biturbo',
+                emoji: '',
+                available: true
+            },
+            {
+                id: 2,
+                name: 'Lamborghini Huracán',
+                price: 1500,
+                category: 'sport',
+                power: 640,
+                speed: 325,
+                description: 'Pure puissance et élégance italienne',
+                emoji: '',
+                available: true
+            },
+            {
+                id: 3,
+                name: 'Rolls-Royce Phantom',
+                price: 2000,
+                category: 'luxe',
+                power: 563,
+                speed: 250,
+                description: 'Le summum du luxe et du raffinement',
+                emoji: '🚗',
+                available: false
+            },
+            {
+                id: 4,
+                name: 'Bentley Continental GT',
+                price: 1800,
+                category: 'luxe',
+                power: 626,
+                speed: 318,
+                description: 'Grand Tourisme d\'exception britannique',
+                emoji: '🚗',
+                available: true
+            },
+            {
+                id: 5,
+                name: 'Range Rover SVR',
+                price: 800,
+                category: 'suv',
+                power: 575,
+                speed: 280,
+                description: 'SUV de luxe aux performances sportives',
+                emoji: '🚙',
+                available: true
+            },
+            {
+                id: 6,
+                name: 'Porsche Cayenne Turbo',
+                price: 900,
+                category: 'suv',
+                power: 541,
+                speed: 286,
+                description: 'L\'alliance parfaite entre confort et sportivité',
+                emoji: '🚙',
+                available: true
+            }
+        ];
+
+        // Sample reservations data
+        let reservations = [
+            {
+                id: 1,
+                carId: 1,
+                carName: 'Ferrari 488 GTB',
+                customerName: 'Jean Dupont',
+                email: 'jean.dupont@email.com',
+                phone: '+33 6 12 34 56 78',
+                startDate: '2025-07-01',
+                endDate: '2025-07-03',
+                status: 'confirmed'
+            },
+            {
+                id: 2,
+                carId: 3,
+                carName: 'Rolls-Royce Phantom',
+                customerName: 'Marie Martin',
+                email: 'marie.martin@email.com',
+                phone: '+33 6 98 76 54 32',
+                startDate: '2025-06-28',
+                endDate: '2025-06-30',
+                status: 'active'
+            }
+        ];
+
+        // Initialize the application
+        function init() {
+            updateStats();
+            populateCarsGrid();
+            populateAdminCarsGrid();
+            populateReservationsList();
+            updateTranslations();
+            
+            // Show promo popup after 3 seconds
+            setTimeout(() => {
+                if (!localStorage.getItem('promoShown')) {
+                    document.getElementById('promoPopup').classList.remove('hidden');
+                }
+            }, 3000);
+        }
+
+        // Language functions
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateTranslations();
+        }
+
+        function updateTranslations() {
+            document.querySelectorAll('[data-fr]').forEach(element => {
+                const text = element.getAttribute(`data-${currentLanguage}`);
+                if (text) {
+                    if (element.tagName === 'INPUT' && element.type !== 'submit') {
+                        element.placeholder = text;
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            });
+        }
+
+        // Navigation functions
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Car catalog functions
+        function populateCarsGrid() {
+            const grid = document.getElementById('carsGrid');
+            grid.innerHTML = cars.map(car => `
+                <div class="car-card" data-category="${car.category}">
+                    <div class="car-image">${car.images && car.images.length > 0 ? `<img src="${car.images[0]}" alt="Car image">` : car.emoji}
+                        <div class="car-gallery" onclick="openGallery(${car.id})">📷 Galerie</div>
+                    </div>
+                    <div class="car-info">
+                        <h3 class="car-name">${car.name}</h3>
+                        <div class="car-price">${car.price}€/jour</div>
+                        <div class="availability-status ${car.available ? 'available' : 'reserved'}">
+                            ${car.available ? 'Disponible' : 'Réservé'}
+                        </div>
+                        <div class="car-features">
+                            <span>🏁 ${car.power} CV</span>
+                            <span>⚡ ${car.speed} km/h</span>
+                            <span>🛡️ Assurance incluse</span>
+                            <span>🚗 ${car.category}</span>
+                        </div>
+                        <button class="btn-reserve" onclick="openReservationModal(${car.id})" ${!car.available ? 'disabled' : ''}>
+                            ${car.available ? 'Réserver' : 'Non disponible'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCars(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const cards = document.querySelectorAll('.car-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function showCarDetails(carId) {
+            const car = cars.find(c => c.id === carId);
+            const modal = document.getElementById('carModal');
+            const content = document.getElementById('carModalContent');
+            
+            content.innerHTML = `
+                <h3>${car.name}</h3>
+                <div style="font-size: 6rem; text-align: center; margin: 2rem 0;">${car.emoji}</div>
+                <p><strong>Prix:</strong> ${car.price}€/jour</p>
+                <p><strong>Puissance:</strong> ${car.power} CV</p>
+                <p><strong>Vitesse max:</strong> ${car.speed} km/h</p>
+                <p><strong>Catégorie:</strong> ${car.category}</p>
+                <p><strong>Description:</strong> ${car.description}</p>
+                <div style="margin-top: 2rem;">
+                    <button class="btn-primary" onclick="openReservationModal(${car.id}); closeModal('carModal')">
+                        Réserver maintenant
+                    </button>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Reservation functions
+        function openReservationModal(carId) {
+            currentCarForReservation = carId;
+            const modal = document.getElementById('reservationModal');
+            modal.classList.remove('hidden');
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('resStartDate').min = today;
+            document.getElementById('resEndDate').min = today;
+    generateAvailabilityCalendar(carId);
+        }
+
+        function submitReservation(event) {
+            event.preventDefault();
+            
+            const reservation = {
+                id: reservations.length + 1,
+                carId: currentCarForReservation,
+                carName: cars.find(c => c.id === currentCarForReservation).name,
+                customerName: document.getElementById('resName').value,
+                email: document.getElementById('resEmail').value,
+                phone: document.getElementById('resPhone').value,
+                startDate: document.getElementById('resStartDate').value,
+                endDate: document.getElementById('resEndDate').value,
+                notes: document.getElementById('resNotes').value,
+                status: 'confirmed'
+            };
+            
+            reservations.push(reservation);
+            
+            // Update car availability
+            const car = cars.find(c => c.id === currentCarForReservation);
+            car.available = false;
+            
+            // Refresh displays
+            populateCarsGrid();
+            populateReservationsList();
+            
+            alert('Réservation confirmée ! Nous vous contacterons sous peu.');
+            closeModal('reservationModal');
+            
+            // Reset form
+            event.target.reset();
+        }
+
+        // Admin functions
+        function adminLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === 'admin' && password === 'admin') {
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+            } else {
+                alert('Identifiants incorrects');
+            }
+        }
+
+        function adminLogout() {
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function showAdminTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+        }
+
+        function populateAdminCarsGrid() {
+            const grid = document.getElementById('adminCarsGrid');
+            grid.innerHTML = cars.map(car => `
+                <div class="car-card">
+                    <div class="car-image">${car.images && car.images.length > 0 ? `<img src="${car.images[0]}" alt="Car image">` : car.emoji}</div>
+                    <div class="car-info">
+                        <h3 class="car-name">${car.name}</h3>
+                        <div class="car-price">${car.price}€/jour</div>
+                        <div class="availability-status ${car.available ? 'available' : 'reserved'}">
+                            ${car.available ? 'Disponible' : 'Réservé'}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="btn-secondary" onclick="editCar(${car.id})" style="flex: 1;">Modifier</button>
+                            <button class="btn-secondary" onclick="deleteCar(${car.id})" style="flex: 1; background: #ff6b6b;">Supprimer</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateReservationsList() {
+            const list = document.getElementById('reservationsList');
+            list.innerHTML = reservations.map(res => `
+                <div style="background: #1a1a1a; color: #eee; padding: 1.5rem; border-radius: 15px; margin-bottom: 1rem; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h4>${res.carName}</h4>
+                            <p><strong>Client:</strong> ${res.customerName}</p>
+                            <p><strong>Email:</strong> ${res.email}</p>
+                            <p><strong>Téléphone:</strong> ${res.phone}</p>
+                            <p><strong>Période:</strong> ${res.startDate} au ${res.endDate}</p>
+                            <span class="availability-status ${res.status === 'confirmed' ? 'available' : 'reserved'}">${res.status}</span>
+                        </div>
+                        <div>
+                            <button class="btn-secondary" onclick="deleteReservation(${res.id})" style="background: #ff6b6b;">Supprimer</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showAddCarModal() {
+            document.getElementById('addCarModal').classList.remove('hidden');
+        }
+
+        function addCar(event) {
+            event.preventDefault();
+            
+            const newCar = {
+                id: cars.length + 1,
+                name: document.getElementById('carName').value,
+                price: parseInt(document.getElementById('carPrice').value),
+                category: document.getElementById('carCategory').value,
+                power: parseInt(document.getElementById('carPower').value),
+                speed: parseInt(document.getElementById('carSpeed').value),
+                description: document.getElementById('carDescription').value,
+                emoji: document.getElementById('carCategory').value === 'sport' ? '' : 
+                      document.getElementById('carCategory').value === 'suv' ? '🚙' : '🚗',
+                available: true,
+                images: Array.from(document.getElementById('carImages').files).map(f => URL.createObjectURL(f))
+            };
+            
+            cars.push(newCar);
+            populateCarsGrid();
+            populateAdminCarsGrid();
+            
+            closeModal('addCarModal');
+            event.target.reset();
+            
+            alert('Véhicule ajouté avec succès !');
+        }
+
+        function editCar(carId) {
+            const car = cars.find(c => c.id === carId);
+            const newPrice = prompt('Nouveau prix par jour:', car.price);
+            if (newPrice && !isNaN(newPrice)) {
+                car.price = parseInt(newPrice);
+                populateCarsGrid();
+                populateAdminCarsGrid();
+            }
+        }
+
+        function deleteCar(carId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
+                cars = cars.filter(c => c.id !== carId);
+                populateCarsGrid();
+                populateAdminCarsGrid();
+            }
+        }
+
+        function deleteReservation(resId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
+                const reservation = reservations.find(r => r.id === resId);
+                const car = cars.find(c => c.id === reservation.carId);
+                if (car) car.available = true;
+                
+                reservations = reservations.filter(r => r.id !== resId);
+                populateReservationsList();
+                populateCarsGrid();
+                populateAdminCarsGrid();
+            }
+        }
+
+        // Modal functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // FAQ functions
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('open');
+        }
+
+        // Contact form
+        function submitContact(event) {
+            event.preventDefault();
+            alert('Message envoyé ! Nous vous répondrons dans les plus brefs délais.');
+            event.target.reset();
+        }
+
+        // Promo popup
+        function closePromo() {
+            document.getElementById('promoPopup').classList.add('hidden');
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.add('hidden');
+            }
+        });
+
+        
+// Preview uploaded car images (admin modal)
+function previewCarImages(event) {
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.innerHTML = '';
+    const files = event.target.files;
+    if (files.length > 20) {
+        alert("Maximum 20 images.");
+        event.target.value = "";
+        return;
+    }
+    for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = "uploaded-image";
+            previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(files[i]);
+    }
+}
+
+
+        
+// Gallery logic
+let galleryImages = [];
+let currentGalleryIndex = 0;
+
+function openGallery(carId) {
+    const car = cars.find(c => c.id === carId);
+    if (!car || !car.images || car.images.length === 0) return;
+
+    galleryImages = car.images;
+    currentGalleryIndex = 0;
+    document.getElementById("galleryImage").src = galleryImages[currentGalleryIndex];
+    document.getElementById("galleryModal").classList.remove("hidden");
+}
+
+function nextGalleryImage() {
+    if (galleryImages.length === 0) return;
+    currentGalleryIndex = (currentGalleryIndex + 1) % galleryImages.length;
+    document.getElementById("galleryImage").src = galleryImages[currentGalleryIndex];
+}
+
+function prevGalleryImage() {
+    if (galleryImages.length === 0) return;
+    currentGalleryIndex = (currentGalleryIndex - 1 + galleryImages.length) % galleryImages.length;
+    document.getElementById("galleryImage").src = galleryImages[currentGalleryIndex];
+}
+
+
+        
+// Statistiques admin
+function updateStats() {
+    const totalRevenue = reservations.reduce((sum, r) => {
+        const car = cars.find(c => c.id === r.carId);
+        if (!car) return sum;
+        const start = new Date(r.startDate);
+        const end = new Date(r.endDate);
+        const days = (end - start) / (1000 * 3600 * 24) + 1;
+        return sum + (days * car.price);
+    }, 0);
+    document.getElementById("totalIncome").textContent = totalRevenue.toLocaleString('fr-FR') + "€";
+    document.getElementById("reservationCount").textContent = reservations.length;
+
+    const monthly = {};
+    reservations.forEach(r => {
+        const date = new Date(r.startDate);
+        const key = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}`;
+        const car = cars.find(c => c.id === r.carId);
+        if (!car) return;
+        const start = new Date(r.startDate);
+        const end = new Date(r.endDate);
+        const days = (end - start) / (1000 * 3600 * 24) + 1;
+        const value = days * car.price;
+        monthly[key] = (monthly[key] || 0) + value;
+    });
+
+    drawRevenueChart(monthly);
+}
+
+function drawRevenueChart(data) {
+    const canvas = document.getElementById("revenueChart");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 600;
+    canvas.height = 300;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const keys = Object.keys(data).sort();
+    const values = keys.map(k => data[k]);
+    const max = Math.max(...values, 100);
+
+    keys.forEach((label, i) => {
+        const barHeight = (values[i] / max) * 200;
+        const x = 50 + i * 60;
+        ctx.fillStyle = "#FFD700";
+        ctx.fillRect(x, 250 - barHeight, 40, barHeight);
+        ctx.fillStyle = "#fff";
+        ctx.fillText(label, x, 270);
+        ctx.fillText(Math.round(values[i]) + "€", x, 240 - barHeight);
+    });
+}
+
+
+        
+function generateAvailabilityCalendar(carId) {
+    const calendar = document.getElementById("availabilityCalendar");
+    calendar.innerHTML = "";
+    const carRes = reservations.filter(r => r.carId === carId);
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
+    for (let i = 1; i <= 31; i++) {
+        const date = new Date(year, month, i);
+        if (date.getMonth() !== month) break;
+
+        const cell = document.createElement("div");
+        cell.className = "calendar-day";
+        const iso = date.toISOString().split("T")[0];
+        const isReserved = carRes.some(r =>
+            iso >= r.startDate && iso <= r.endDate
+        );
+        cell.textContent = i;
+        if (isReserved) {
+            cell.classList.add("reserved");
+        } else {
+            cell.classList.add("available");
+        }
+        calendar.appendChild(cell);
+    }
+}
+
+
+        
+// Redirection vers Stripe si paiement en ligne
+function redirectToStripe() {
+    window.location.href = "https://buy.stripe.com/test_dR67uG7yZ6yMbqQcMN"; // lien test Stripe
+}
+
+// Affichage du bouton Stripe selon mode de paiement
+document.addEventListener("DOMContentLoaded", () => {
+    const radios = document.querySelectorAll("input[name='paymentMethod']");
+    const stripeSection = document.getElementById("stripePaymentSection");
+    function toggleStripeButton() {
+        const selected = document.querySelector("input[name='paymentMethod']:checked");
+        stripeSection.style.display = (selected && selected.value === "en ligne") ? "block" : "none";
+    }
+    radios.forEach(el => el.addEventListener("change", toggleStripeButton));
+    toggleStripeButton(); // initial
+});
+
+
+        
+// Soumission vers le serveur Flask pour enregistrer la réservation
+function submitReservation() {
+    const name = document.getElementById("resName").value;
+    const email = document.getElementById("resEmail").value;
+    const start = document.getElementById("resStartDate").value;
+    const end = document.getElementById("resEndDate").value;
+    const car = cars.find(c => c.id === currentCarForReservation);
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+
+    if (!name || !start || !end || !car || !paymentMethod) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    const payload = {
+        email: email,
+        name: name,
+        carId: car.id,
+        carName: car.name,
+        startDate: start,
+        endDate: end,
+        paymentMethod: paymentMethod
+    };
+
+    fetch("/reserve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).then(res => res.json()).then(data => {
+        if (paymentMethod === "en ligne") {
+            redirectToStripe(); // aller payer
+        } else {
+            window.location.href = "/confirmation";
+        }
+    }).catch(err => {
+        alert("Erreur lors de l'enregistrement : " + err);
+    });
+}
+
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+<div id="galleryModal" class="modal hidden">
+    <div class="modal-content" style="background-color:#000; color:#fff; text-align:center; position:relative;">
+        <button class="modal-close" onclick="closeModal('galleryModal')">&times;</button>
+        <img id="galleryImage" src="" style="max-width:100%; max-height:60vh; border-radius:10px;">
+        <div style="margin-top:1rem;">
+            <button onclick="prevGalleryImage()" class="btn-secondary" style="margin-right:1rem;">⬅️</button>
+            <button onclick="nextGalleryImage()" class="btn-secondary">➡️</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
