@@ -1804,21 +1804,23 @@ function submitReservation() {
         paymentMethod: paymentMethod
     };
 
-    fetch("/reserve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    }).then(res => res.json()).then(data => {
-        if (paymentMethod === "en ligne") {
-            redirectToStripe(); // aller payer
-        } else {
-            window.location.href = "/confirmation";
-        }
-    }).catch(err => {
-        alert("Erreur lors de l'enregistrement : " + err);
+    fetch("https://cetruc.onrender.com/reserve", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (paymentMethod === "en ligne") {
+        window.location.href = "https://cetruc.onrender.com/success";
+    } else {
+        window.location.href = "https://cetruc.onrender.com/confirmation";
+    }
+    })
+    .catch(err => {
+    alert("Erreur lors de la réservation : " + err);
     });
 }
-
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', init);
